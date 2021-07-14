@@ -1,0 +1,94 @@
+GET /aaa.txt HTTP/1.1
+Accept: text/html, application/xhtml+xml, image/jxr, */*
+Accept-Language: zh-CN
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko
+Host: 192.168.26.69:9999
+Connection: Keep-Alive
+Accept-Encoding: gzip, deflate
+
+http请求消息格式说明:
+1 请求行:如GET /aaa.txt HTTP/1.1
+2 请求头:健值对
+3 \r\n
+4 请求内容
+
+get和post的区别:
+当提交表单的时候, 使用post方式不显示提交的数据
+使用get方式会显示如用户名和密码之类的数据.
+使用post比get方式安全.
+
+http响应消息格式说明:
+1 响应行: HTTP/1.1 200 OK
+2 响应头: 健值对
+		content-type
+		Conten-Length: 要有就必须是正确的文件大小, 要么写0
+3 空行: \r\n
+4 响应消息正文	
+
+web服务器开发流程:
+1 创建socket, 得到监听文件描述符lfd----socket()
+2 设置端口复用----setsockopt()
+3 绑定----bind()
+4 设置监听-----listen()
+5 创建epoll树, 得到树根文件描述符epfd---epoll_create()
+6 将监听文件描述符lfd上树---epoll_ctl(epfd, EPOLL_CTL_ADD...);
+7 
+while(1)
+{
+	//等待事件的发生
+	nready = epoll_wait();
+	if(nready<0)
+	{
+		if(errno==EINTR)
+		{
+			continue;
+		}
+		break;
+	}
+	
+	//下面是有事件发生, 循环处理每一个文件描述符
+	for(i=0; i<nready; i++)
+	{
+		sockfd = event[i].data.fd;
+		//有客户端连接请求到来
+		if(sockfd==lfd)
+		{
+			//接受新的客户端连接请求
+			cfd = accept();
+			
+			//将新的cfd上epoll树
+			epoll_ctl(epfd, EPOLL_CTL_ADD...);
+		}
+		//有数据发来的情况
+		else
+		{
+			//接受数据并进行处理
+			http_request(cfd);
+		}
+	}
+}
+
+int http_request(int cfd)
+{
+	//读取请求行
+	Readline();
+	
+	//分析请求行, 得到要请求的资源文件名file
+		如: GET /hanzi.c /HTTP1.1
+		
+	//循环读完剩余的内核缓冲区的数据
+	while((n = Readline())>0);	
+		
+	//判断文件释放存在
+	stat();
+	
+	1 文件不存在
+		返回错误页
+			组织应答信息: http响应格式消息+错误页正文内容
+	2 文件存在
+		判断文件类型:
+			2.1 普通文件
+				组织应答信息: http响应格式消息+消息正文
+			2.2 目录文件
+				组织应答消息: http响应格式消息+html格式文件内容
+}
