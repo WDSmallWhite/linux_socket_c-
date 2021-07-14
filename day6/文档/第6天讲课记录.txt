@@ -1,0 +1,61 @@
+编写一个基于event实现的tcp服务器
+1 创建socket---socket()
+2 设置端口复用---setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(int))
+3 绑定--bind()
+4 设置监听--listen()
+5 创建地基
+	struct event_base *base = event_base_new()
+6 创建lfd对应的事件
+	struct event *ev = event_new(base, lfd, EV_READ|EV_PERSIST, conncb, base);
+7 上event_base地基
+	event_add(ev, NULL);
+8 进入事件循环
+	event_base_dispatch(base);
+	
+9 释放资源
+	event_base_free(base);
+	event_free(ev);
+	
+
+typedef void (*event_callback_fn)(evutil_socket_t fd, short events, void *arg);
+//监听文件描述符对应的事件回调函数
+void conncb(evutil_socket_t fd, short events, void *arg)
+{
+	struct event_base *base = (struct event_base *)arg;
+	//接受新的连接
+	int cfd = accept(fd, NULL, NULL);
+	if(cfd>0)
+	{
+		//创建一个新的事件
+		struct event *ev = event_new(base, cfd, EV_READ|EV_PERSIST, readcb, NULL);
+		event_add(ev, NULL);
+	}
+}
+
+//读客户端数据对应的回调函数
+void readcb(evutil_socket_t fd, short events, void *arg)
+{	
+	//读数据
+	n = read(fd, buf, sizeof(buf));
+	if(n<=0)
+	{
+		//从base地基上删除该事件
+		close(fd);
+		event_del(ev);
+		event_free(ev);
+	}
+	//发送数据给对方
+	write(fd, buf, n);
+}
+
+bufferevent的读事件回调触发时机:
+	当数据由内核的读缓冲区到bufferevent的读缓冲区的时候, 会触发bufferevent的
+	读事件回调.需要注意的是: 数据有内核到bufferevent的过程不是用户程序执行的, 
+	是有bufferevent内部操作的.
+	
+bufferevent的写事件回调触发时机:
+	当用户程序将数据写到bufferevent的写缓冲区之后, bufferevent会自动将数据
+	写到内核的写缓冲区,最终有内核程序将数据发送出去.
+	
+事件回调:
+	当bufferevent绑定的socket连接, 断开或者异常的时候触发事件回调.

@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<title>my first html page</title>
+		<meta http-equiv="content-Type" content="text/html; charset=utf8">
+	</head>
+	
+	<body>
+		<font color="green" size=5>hello world</font>
+		<h1> hello world </h1>
+		<h2> hello world </h2>
+		<h3> hello world </h3>
+		<h4> hello world </h4>
+		<h5> hello world </h5>
+		<h6> hello world </h6>
+		<br/>
+		
+		<hr/>
+		
+		<ul type=square>
+			<li>语文</li>
+			<li>数学</li>
+			<li>英语</li>
+			<li>历史</li>
+			<li>地理</li>
+		</ul>
+		
+		<ol type=i>
+			<li>abc</li>
+			<li>bcd</li>
+			<li>yyy</li>
+			<li>zzz</li>
+			<li>def</li>
+		</ol>
+		
+		<font color="#000080" size=7> 你好呀 </font>
+		
+		</br>
+		<img src="./img1.bmp" alt="mayun" title="哎呀呀" width=600 height=600>
+		
+		</br>
+		<a href="http://www.163.com" title="goto wangyi" target="_blank">www.163.com</a>
+			
+		<a href="http://www.163.com" title="goto wangyi" target="_blank"><img src="./img1.bmp" alt="mayun" title="哎呀呀" width=600 height=600></a>
+		
+		<a href=test.log> test.log </a>
+	
+	</body>
+</html>
